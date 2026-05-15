@@ -13,7 +13,7 @@ export function UploadFeedback({ status, fileName, message }: UploadFeedbackProp
       {status === 'loading' && (
         <>
           <LoadingSpinner />
-          <p className="mt-4 text-sm text-gov-gray">
+          <p className="mt-4 text-sm text-gov-dark-gray font-medium">
             Processando arquivo...
           </p>
           {fileName && (

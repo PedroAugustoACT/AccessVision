@@ -4,7 +4,7 @@ export function Header() {
       <h1 className="text-4xl md:text-5xl font-bold text-gov-blue mb-3">
         Access Vision
       </h1>
-      <p className="text-gov-gray text-lg">
+      <p className="text-gov-dark-gray text-lg font-medium">
         Envie seu documento PDF para análise
       </p>
     </div>

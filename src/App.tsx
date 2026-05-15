@@ -13,7 +13,7 @@ function App() {
         </div>
 
         {/* Footer informativo */}
-        <div className="mt-8 text-center text-sm text-gov-gray">
+        <div className="mt-8 text-center text-sm text-gov-dark-gray font-medium">
           <p>
             Seus dados são processados com segurança e em conformidade com a LGPD
           </p>

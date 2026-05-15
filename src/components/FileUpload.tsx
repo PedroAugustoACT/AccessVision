@@ -96,10 +96,10 @@ export function FileUpload() {
             <h3 className="mt-4 text-lg font-semibold text-gov-dark-gray">
               Envie seu arquivo PDF
             </h3>
-            <p className="mt-2 text-sm text-gov-gray">
+            <p className="mt-2 text-sm text-gov-dark-gray font-medium">
               Arraste e solte o arquivo aqui ou clique para selecionar
             </p>
-            <p className="mt-2 text-xs text-gov-gray">
+            <p className="mt-2 text-xs text-gov-dark-gray">
               Tamanho máximo: 50MB
             </p>
             {uploadState.status === 'error' && uploadState.message && (
