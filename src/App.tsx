@@ -15,7 +15,7 @@ function App() {
         {/* Footer informativo */}
         <footer className="mt-8 text-center text-sm text-gov-dark-gray font-medium" role="contentinfo">
           <p>
-            Seus dados são processados com segurança e em conformidade com a <abbr title="Lei Geral de Proteção de Dados">LGPD</abbr>
+            Informática na Educação - UFAL | Desenvolvido
           </p>
         </footer>
       </div>
