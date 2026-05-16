@@ -14,6 +14,16 @@ export function FileUpload() {
   const [isDragActive, setIsDragActive] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  const handleDownloadPDF = () => {
+    // Faz o download do PDF da pasta public
+    const link = document.createElement('a');
+    link.href = '/pdf_modificado.pdf';
+    link.download = 'pdf_modificado.pdf';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   const handleDrag = (e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -120,6 +130,7 @@ export function FileUpload() {
             status={uploadState.status}
             fileName={uploadState.fileName}
             message={uploadState.message}
+            onDownload={handleDownloadPDF}
           />
         )}
         <input
