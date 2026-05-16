@@ -99,6 +99,7 @@ export function FileUpload() {
         }`}
         role="region"
         aria-label="Área de envio de arquivo PDF"
+        aria-describedby="upload-instructions"
       >
         {uploadState.status === 'idle' || uploadState.status === 'error' ? (
           <div className="flex flex-col items-center justify-center cursor-pointer">
@@ -106,21 +107,23 @@ export function FileUpload() {
             <h3 className="mt-4 text-lg font-semibold text-gov-dark-gray">
               Envie seu arquivo PDF
             </h3>
-            <p className="mt-2 text-sm text-gov-dark-gray font-medium">
-              Arraste e solte o arquivo aqui ou clique para selecionar
-            </p>
-            <p className="mt-2 text-xs text-gov-dark-gray">
-              Tamanho máximo: 50MB
-            </p>
+            <div id="upload-instructions" className="mt-2 text-center">
+              <p className="text-sm text-gov-dark-gray font-medium">
+                Arraste e solte o arquivo aqui ou clique para selecionar
+              </p>
+              <p className="mt-2 text-xs text-gov-dark-gray">
+                Tamanho máximo: 50MB. Apenas arquivos PDF são aceitos.
+              </p>
+            </div>
             {uploadState.status === 'error' && uploadState.message && (
-              <p className="mt-4 text-sm text-gov-red font-medium" role="alert">
+              <p className="mt-4 text-sm text-gov-red font-medium" role="alert" aria-live="assertive">
                 {uploadState.message}
               </p>
             )}
             <button
               onClick={handleClick}
               className="mt-6 px-6 py-3 bg-gov-blue text-white font-semibold rounded-lg hover:bg-[#005080] active:bg-[#004a6b] transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-gov-blue focus:ring-offset-2"
-              aria-label="Selecionar arquivo PDF"
+              aria-label="Selecionar arquivo PDF para enviar"
             >
               Selecionar Arquivo
             </button>
@@ -139,7 +142,8 @@ export function FileUpload() {
           accept=".pdf"
           onChange={handleInputChange}
           className="hidden"
-          aria-label="Entrada de arquivo"
+          aria-label="Selecionar arquivo PDF para processar"
+          aria-describedby="upload-instructions"
         />
       </div>
     </div>
