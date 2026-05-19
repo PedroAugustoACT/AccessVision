@@ -1,4 +1,4 @@
-# Access Vision - info-educ
+# Access Vision
 
 Aplicação web para processamento de documentos PDF com foco em acessibilidade e design moderno
 
@@ -9,7 +9,7 @@ Plataforma moderna para upload de documentos PDF com interface baseada no Design
 ## 🎯 Funcionalidades
 
 - **Upload de PDF**: Envie via drag-and-drop ou seleção de arquivo
-- **Validação**: Apenas PDFs são aceitos (máximo 50MB)
+- **Validação**: Apenas PDFs são aceitos
 - **Processamento**: Sistema com feedback visual em tempo real
 - **Download**: Baixe o arquivo processado (`pdf_modificado.pdf`)
 - **Acessibilidade Total**: Interface 100% acessível (WCAG 2.1)
@@ -123,32 +123,7 @@ npm run preview  # Preview do build
 
 ## ♿ Acessibilidade (WCAG 2.1)
 
-A aplicação implementa padrões completos de acessibilidade:
-
-### Atributos ARIA
-- ✅ `aria-label` em todos os elementos interativos
-- ✅ `aria-describedby` conectando elementos relacionados
-- ✅ `aria-live="polite"` para atualizações de status
-- ✅ `aria-busy` em processos assíncronos
-- ✅ `role` adequado (region, button, status, banner, main, contentinfo)
-
-### HTML Semântico
-- ✅ `<header>` com role="banner"
-- ✅ `<main>` com role="main"
-- ✅ `<footer>` com role="contentinfo"
-- ✅ `<button>` para ações
-- ✅ Headings hierárquicos (`<h1>`, `<h4>`)
-
-### Navegação
-- ✅ Navegação completa por teclado
-- ✅ Focus visível em todos os elementos
-- ✅ Ordem de tabulação lógica
-
-### Outros
-- ✅ Contraste de cores adequado
-- ✅ Textos descritivos em SVG (`aria-hidden`)
-- ✅ Mensagens de erro com `role="alert"`
-- ✅ Classe `.sr-only` para leitores de tela
+A ser desenvolvido
 
 ## 📦 Dependências
 
