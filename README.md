@@ -4,14 +4,16 @@ Aplicação web para processamento de documentos PDF com foco em acessibilidade 
 
 ## 📋 Descrição
 
-Plataforma moderna para upload de documentos PDF com interface baseada no Design System do Governo Federal Brasileiro. A aplicação oferece upload via drag-and-drop, processamento simulado e download do arquivo modificado com total conformidade de acessibilidade.
+Plataforma para upload de PDFs com gráficos matemáticos e adaptação para baixa visão: contraste em escala de cinza, descrições longas por IA e texto integrado abaixo de cada gráfico. Interface baseada no Design System do Governo Federal.
+
+**Produção:** https://access-vision-opal.vercel.app/
 
 ## 🎯 Funcionalidades
 
 - **Upload de PDF**: Envie via drag-and-drop ou seleção de arquivo
 - **Validação**: Apenas PDFs são aceitos
-- **Processamento**: Sistema com feedback visual em tempo real
-- **Download**: Baixe o arquivo processado (`pdf_modificado.pdf`)
+- **Processamento**: API FastAPI (`accessvision-api/`) com IA (Cursor ou Gemini)
+- **Download**: PDF adaptado gerado pelo backend
 - **Acessibilidade Total**: Interface 100% acessível (WCAG 2.1)
 - **Conformidade LGPD**: Dados processados com segurança
 - **Responsivo**: Otimizado para mobile, tablet e desktop
@@ -36,42 +38,48 @@ Plataforma moderna para upload de documentos PDF com interface baseada no Design
 - **Gradiente**: Fundo com degradê suave
 - **Animações**: Transições fluidas e spinner animado
 
-## 📋 Estrutura do Projeto
+## 📋 Estrutura do Repositório
 
 ```
-src/
-├── components/
-│   ├── DocumentIcon.tsx      # Ícone SVG de documento
-│   ├── FileUpload.tsx        # Componente principal (drag-drop)
-│   ├── Header.tsx            # Cabeçalho e título
-│   ├── LoadingSpinner.tsx    # Spinner animado
-│   ├── UploadFeedback.tsx    # Feedback de status
-│   └── index.ts              # Exports dos componentes
-├── App.tsx                   # Componente principal
-├── App.css                   # Estilos específicos
-├── index.css                 # Estilos com Tailwind
-├── main.tsx                  # Ponto de entrada
-└── assets/                   # Recursos do projeto
-public/
-└── pdf_modificado.pdf        # PDF padrão para download
+AccessVision/                 # raiz do Git
+├── src/                    # front-end React + Vite
+├── public/
+├── accessvision-api/       # backend FastAPI
+│   ├── app/
+│   ├── requirements.txt
+│   └── render.yaml
+├── package.json
+└── vite.config.ts          # proxy /api → localhost:8000
 ```
 
-## 🔧 Instalação
+## 🔧 Instalação e desenvolvimento
+
+### Front-end
 
 ```bash
 npm install
-```
-
-## 💻 Desenvolvimento
-
-```bash
 npm run dev
 ```
 
-Acesse `http://localhost:5173`
+Acesse `http://localhost:5173` (proxy `/api` → `http://127.0.0.1:8000`).
 
-- **Hot Module Reload**: ✅ Habilitado
-- **Port**: 5173 (ou próxima disponível)
+### API
+
+```bash
+cd accessvision-api
+pip install -r requirements.txt
+cp .env.example .env   # CURSOR_API_KEY ou GEMINI_API_KEY
+uvicorn app.main:app --reload --port 8000
+```
+
+Detalhes da API: [accessvision-api/README.md](accessvision-api/README.md).
+
+## 🌐 Deploy
+
+| Serviço | Root Directory (no painel) | Variáveis |
+|---------|----------------------------|-----------|
+| **Vercel** (front) | `.` (raiz do repo) | `VITE_API_URL` = URL do Render |
+| **Render** (API) | `accessvision-api` | `CURSOR_API_KEY`, `CORS_ORIGINS` |
 
 ## 🏗️ Build
 
@@ -82,12 +90,10 @@ npm run preview  # Preview do build
 
 ## 📝 Fluxo Principal
 
-1. **Upload**: Usuário arrasta PDF ou clica para selecionar
-2. **Validação**: Sistema verifica se é PDF
-3. **Processamento**: Spinner mostra carregamento (2s simulado)
-4. **Sucesso**: Mensagem de confirmação com checkmark verde
-5. **Download**: Clique em "Baixar PDF Modificado" para fazer download
-6. **Reset**: Auto-limpeza após 5 segundos
+1. **Upload**: Usuário envia PDF
+2. **API**: Extrai gráficos, aplica contraste, gera descrições (IA)
+3. **PDF de saída**: Descrições inseridas abaixo de cada gráfico
+4. **Download**: Blob retornado pela API
 
 ## 🎯 Estados da Interface
 
@@ -171,8 +177,7 @@ colors: {
 
 ## 🔄 Próximas Melhorias
 
-- [ ] Integração com backend real
-- [ ] Barra de progresso real
+- [ ] Barra de progresso com etapas reais do processamento
 - [ ] Histórico de uploads
 - [ ] Suporte a múltiplos arquivos
 - [ ] Previsualização de PDF

@@ -11,6 +11,14 @@ node_modules
 dist
 dist-ssr
 *.local
+.env
+.env.local
+
+# Python (API)
+accessvision-api/.venv/
+accessvision-api/__pycache__/
+accessvision-api/**/__pycache__/
+*.py[cod]
 
 # Editor directories and files
 .vscode/*
