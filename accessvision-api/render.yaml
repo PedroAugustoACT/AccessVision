@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: accessvision-api
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: CORS_ORIGINS
+        value: http://localhost:5173,https://access-vision-opal.vercel.app
+      - key: CURSOR_API_KEY
+        sync: false
+      - key: CURSOR_MODEL_ID
+        value: composer-2
+      - key: LLM_PROVIDER
+        value: cursor
