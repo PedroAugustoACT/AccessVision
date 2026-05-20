@@ -2,6 +2,9 @@ import { useState, useRef } from 'react';
 import { DocumentIcon } from './DocumentIcon';
 import { UploadFeedback } from './UploadFeedback';
 
+const API_BASE = import.meta.env.VITE_API_URL?.replace(/\/$/, '') ?? '';
+const PROCESS_URL = `${API_BASE}/api/v1/process`;
+const MAX_SIZE_MB = 50;
 
 interface UploadState {
   status: 'idle' | 'loading' | 'success' | 'error';
@@ -12,13 +15,22 @@ interface UploadState {
 export function FileUpload() {
   const [uploadState, setUploadState] = useState<UploadState>({ status: 'idle' });
   const [isDragActive, setIsDragActive] = useState(false);
+  const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
+  const [downloadName, setDownloadName] = useState('pdf_acessivel.pdf');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  const clearDownloadUrl = () => {
+    if (downloadUrl) {
+      URL.revokeObjectURL(downloadUrl);
+      setDownloadUrl(null);
+    }
+  };
+
   const handleDownloadPDF = () => {
-    // Faz o download do PDF da pasta public
+    if (!downloadUrl) return;
     const link = document.createElement('a');
-    link.href = '/pdf_modificado.pdf';
-    link.download = 'pdf_modificado.pdf';
+    link.href = downloadUrl;
+    link.download = downloadName;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -30,7 +42,7 @@ export function FileUpload() {
     setIsDragActive(e.type === 'dragenter' || e.type === 'dragover');
   };
 
-  const handleFile = (file: File) => {
+  const processFile = async (file: File) => {
     if (!file.type.includes('pdf')) {
       setUploadState({
         status: 'error',
@@ -39,28 +51,72 @@ export function FileUpload() {
       return;
     }
 
-    // Simulando upload com loading
+    if (file.size > MAX_SIZE_MB * 1024 * 1024) {
+      setUploadState({
+        status: 'error',
+        message: `O arquivo excede o limite de ${MAX_SIZE_MB} MB`,
+      });
+      return;
+    }
+
+    clearDownloadUrl();
     setUploadState({
       status: 'loading',
       fileName: file.name,
     });
 
-    // Simula delay de upload
-    setTimeout(() => {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+      const response = await fetch(PROCESS_URL, {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        let detail = 'Erro ao processar o PDF. Tente novamente.';
+        try {
+          const err = await response.json();
+          if (err.detail) {
+            detail = typeof err.detail === 'string' ? err.detail : detail;
+          }
+        } catch {
+          /* ignore */
+        }
+        setUploadState({ status: 'error', message: detail });
+        return;
+      }
+
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      const baseName = file.name.replace(/\.pdf$/i, '');
+      setDownloadUrl(url);
+      setDownloadName(`acessivel_${baseName}.pdf`);
       setUploadState({
         status: 'success',
         fileName: file.name,
-        message: 'Arquivo enviado com sucesso',
+        message: 'PDF adaptado com sucesso',
       });
 
-      // Limpa a mensagem após 5 segundos
       setTimeout(() => {
         setUploadState({ status: 'idle' });
+        clearDownloadUrl();
         if (fileInputRef.current) {
           fileInputRef.current.value = '';
         }
-      }, 5000);
-    }, 2000);
+      }, 30000);
+    } catch {
+      setUploadState({
+        status: 'error',
+        message:
+          'Não foi possível conectar à API. Verifique se o servidor está em execução ou tente mais tarde.',
+      });
+    }
+  };
+
+  const handleFile = (file: File) => {
+    void processFile(file);
   };
 
   const handleDrop = (e: React.DragEvent) => {
@@ -112,7 +168,7 @@ export function FileUpload() {
                 Arraste e solte o arquivo aqui ou clique para selecionar
               </p>
               <p className="mt-2 text-xs text-gov-dark-gray">
-                Tamanho máximo: 50MB. Apenas arquivos PDF são aceitos.
+                Tamanho máximo: {MAX_SIZE_MB}MB. Apenas arquivos PDF são aceitos.
               </p>
             </div>
             {uploadState.status === 'error' && uploadState.message && (
@@ -133,7 +189,7 @@ export function FileUpload() {
             status={uploadState.status}
             fileName={uploadState.fileName}
             message={uploadState.message}
-            onDownload={handleDownloadPDF}
+            onDownload={uploadState.status === 'success' ? handleDownloadPDF : undefined}
           />
         )}
         <input

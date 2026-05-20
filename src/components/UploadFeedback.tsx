@@ -55,7 +55,7 @@ export function UploadFeedback({ status, fileName, message, onDownload }: Upload
             <button
               onClick={onDownload}
               className="mt-6 px-6 py-3 bg-gov-blue text-white font-semibold rounded-lg hover:bg-[#005080] active:bg-[#004a6b] transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-gov-blue focus:ring-offset-2 flex items-center gap-2"
-              aria-label="Baixar arquivo PDF modificado com o nome pdf_modificado.pdf"
+              aria-label="Baixar PDF adaptado para acessibilidade"
               aria-describedby="success-message processed-file-name"
             >
               <svg
