@@ -7,7 +7,7 @@ import httpx
 
 from app.config import settings
 from app.models import ExtractedImage
-from app.services.llm_base import DescriptionProvider
+from app.services.llm_base import DescriptionProvider, ImageProgressCallback
 
 CURSOR_API = "https://api.cursor.com"
 BATCH_SIZE = 5
@@ -46,14 +46,21 @@ class CursorDescriptionProvider(DescriptionProvider):
         if not settings.cursor_api_key:
             raise ValueError("CURSOR_API_KEY não configurada")
 
-    async def describe_images(self, images: list[ExtractedImage]) -> list[str]:
+    async def describe_images(
+        self,
+        images: list[ExtractedImage],
+        on_image_done: ImageProgressCallback | None = None,
+    ) -> list[str]:
         if not images:
             return []
+        total = len(images)
         descriptions: list[str] = []
-        for offset in range(0, len(images), BATCH_SIZE):
+        for offset in range(0, total, BATCH_SIZE):
             batch = images[offset : offset + BATCH_SIZE]
             batch_desc = await self._describe_batch(batch, offset)
             descriptions.extend(batch_desc)
+            if on_image_done:
+                await on_image_done(min(offset + len(batch), total), total)
         return descriptions
 
     async def _describe_batch(self, batch: list[ExtractedImage], offset: int) -> list[str]:

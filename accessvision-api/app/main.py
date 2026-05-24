@@ -22,5 +22,8 @@ app.include_router(process.router)
 
 
 @app.get("/health")
-async def health() -> dict[str, str]:
-    return {"status": "ok"}
+async def health() -> dict[str, str | bool]:
+    return {
+        "status": "ok",
+        "llm_offline": settings.llm_offline,
+    }

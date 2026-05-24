@@ -6,6 +6,9 @@ from app.services.llm_base import DescriptionProvider
 
 
 def get_description_provider() -> DescriptionProvider:
+    if settings.llm_offline:
+        return FallbackDescriptionProvider()
+
     provider = settings.llm_provider.lower()
     if provider == "gemini" and settings.gemini_api_key:
         return GeminiDescriptionProvider()

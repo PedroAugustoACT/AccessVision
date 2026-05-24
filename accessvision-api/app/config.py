@@ -7,7 +7,10 @@ class Settings(BaseSettings):
     cursor_api_key: str = ""
     cursor_model_id: str = "composer-2"
     llm_provider: str = "cursor"
+    llm_offline: bool = False
     gemini_api_key: str = ""
+    gemini_model_id: str = "gemini-2.5-flash"
+    gemini_request_delay_seconds: float = 12.0
     cors_origins: str = "http://localhost:5173,https://access-vision-opal.vercel.app"
     max_upload_mb: int = 50
     llm_timeout_seconds: int = 180
