@@ -2,7 +2,7 @@ import { Header, FileUpload } from './components'
 
 function App() {
   return (
-    <main className="w-full h-screen bg-gradient-to-br from-gov-light-gray via-white to-blue-50 flex flex-col items-center justify-center overflow-hidden" role="main">
+    <main className="w-full min-h-screen bg-gradient-to-br from-gov-light-gray via-white to-blue-50 flex flex-col items-center justify-center py-8" role="main">
       <div className="w-full max-w-2xl px-4">
         {/* Header */}
         <Header />

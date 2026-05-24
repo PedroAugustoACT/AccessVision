@@ -129,7 +129,20 @@ npm run preview  # Preview do build
 
 ## ♿ Acessibilidade (WCAG 2.1)
 
-A ser desenvolvido
+A interface foi desenvolvida seguindo os critérios de sucesso WCAG 2.1 nível AA:
+
+| Critério | Descrição | Status |
+|----------|-----------|--------|
+| 1.3.1 | Informação e relações comunicadas via semântica HTML (`role`, `aria-label`, `aria-describedby`) | ✅ |
+| 1.4.3 | Contraste mínimo 4.5:1 para texto normal (paleta gov-blue, gov-dark-gray, gov-green ajustado) | ✅ |
+| 1.4.4 | Redimensionamento de texto — layout usa `min-h-screen` sem `overflow: hidden` | ✅ |
+| 2.1.1 | Teclado — área de drag-and-drop e todos os botões acessíveis via Tab/Enter/Space | ✅ |
+| 2.4.3 | Ordem de foco lógica e coerente | ✅ |
+| 2.4.11 | Foco visível — `focus-visible` global com outline 2px azul | ✅ |
+| 3.1.1 | Idioma da página — `lang="pt-BR"` no `<html>` | ✅ |
+| 4.1.3 | Mensagens de status — `aria-live="polite"` durante processamento, `aria-live="assertive"` na conclusão/erro | ✅ |
+
+**Tecnologias assistivas testadas:** VoiceOver (macOS/iOS), NVDA (Windows)
 
 ## 📦 Dependências
 
@@ -177,7 +190,7 @@ colors: {
 
 ## 🔄 Próximas Melhorias
 
-- [ ] Barra de progresso com etapas reais do processamento
+- [x] Barra de progresso com etapas reais do processamento (SSE em tempo real)
 - [ ] Histórico de uploads
 - [ ] Suporte a múltiplos arquivos
 - [ ] Previsualização de PDF
