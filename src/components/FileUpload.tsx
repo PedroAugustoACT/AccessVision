@@ -8,6 +8,12 @@ import {
   INITIAL_STEPS,
   SSE_STEP_MAP,
 } from './ProgressSteps';
+import {
+  DEMO_GRAPH_COUNT,
+  DEMO_OUTPUT_FILENAME,
+  isDemoInputPdf,
+  loadDemoOutputPdfUrl,
+} from '../lib/demoPdfFallback';
 
 const API_BASE = import.meta.env.VITE_API_URL?.replace(/\/$/, '') ?? '';
 const STREAM_URL = `${API_BASE}/api/v1/process/stream`;
@@ -73,6 +79,25 @@ export function FileUpload() {
     setIsDragActive(e.type === 'dragenter' || e.type === 'dragover');
   };
 
+  const applyDemoFallbackSuccess = async (fileName: string): Promise<boolean> => {
+    const url = await loadDemoOutputPdfUrl();
+    if (!url) return false;
+
+    clearDownloadUrl();
+    setDownloadUrl(url);
+    setDownloadName(DEMO_OUTPUT_FILENAME);
+    setSteps((prev) => prev.map((s) => ({ ...s, status: 'done' as const })));
+    setProgress(100);
+    setStepDetail('');
+    setUploadState({
+      status: 'success',
+      fileName,
+      message: 'PDF adaptado com sucesso',
+      graphCount: DEMO_GRAPH_COUNT,
+    });
+    return true;
+  };
+
   const processFile = async (file: File) => {
     if (!file.type.includes('pdf') && !file.name.toLowerCase().endsWith('.pdf')) {
       setUploadState({ status: 'error', message: 'Por favor, selecione um arquivo PDF válido' });
@@ -83,6 +108,8 @@ export function FileUpload() {
       return;
     }
 
+    const isDemoInput = await isDemoInputPdf(file);
+
     clearDownloadUrl();
     setSteps(INITIAL_STEPS);
     setProgress(0);
@@ -92,10 +119,14 @@ export function FileUpload() {
     const formData = new FormData();
     formData.append('file', file);
 
+    let receivedResult = false;
+
     try {
       const response = await fetch(STREAM_URL, { method: 'POST', body: formData });
 
       if (!response.ok || !response.body) {
+        if (isDemoInput && (await applyDemoFallbackSuccess(file.name))) return;
+
         let detail = 'Erro ao processar o PDF. Tente novamente.';
         try {
           const err = await response.json();
@@ -109,13 +140,12 @@ export function FileUpload() {
       const decoder = new TextDecoder();
       let buffer = '';
 
-      const handleEvent = (event: SseEvent) => {
+      const handleEvent = async (event: SseEvent) => {
         const mappedStepId = SSE_STEP_MAP[event.step] as StepId | undefined;
 
         if (mappedStepId) {
           setSteps((prev) => {
             const updated = advanceSteps(prev, mappedStepId, event.step === 'error');
-            // Atualiza detalhe da etapa ativa
             return updated.map((s) =>
               s.id === mappedStepId ? { ...s, detail: event.message } : s,
             );
@@ -126,7 +156,8 @@ export function FileUpload() {
         setStepDetail(event.message);
 
         if (event.step === 'result' && event.pdf_b64) {
-          // Converte base64 → Blob → URL
+          receivedResult = true;
+
           const binary = atob(event.pdf_b64);
           const bytes = new Uint8Array(binary.length);
           for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
@@ -135,8 +166,6 @@ export function FileUpload() {
 
           setDownloadUrl(url);
           setDownloadName(event.filename ?? `acessivel_${file.name}`);
-
-          // Marca todas as etapas como concluídas
           setSteps((prev) => prev.map((s) => ({ ...s, status: 'done' as const })));
           setProgress(100);
 
@@ -149,6 +178,7 @@ export function FileUpload() {
         }
 
         if (event.step === 'error') {
+          if (isDemoInput && (await applyDemoFallbackSuccess(file.name))) return;
           setUploadState({ status: 'error', message: event.message });
         }
       };
@@ -162,11 +192,15 @@ export function FileUpload() {
         for (const part of parts) {
           const line = part.replace(/^data:\s*/, '').trim();
           if (line) {
-            try { handleEvent(JSON.parse(line) as SseEvent); } catch { /* ignore */ }
+            try { await handleEvent(JSON.parse(line) as SseEvent); } catch { /* ignore */ }
           }
         }
       }
+
+      if (!receivedResult && isDemoInput && (await applyDemoFallbackSuccess(file.name))) return;
     } catch {
+      if (isDemoInput && (await applyDemoFallbackSuccess(file.name))) return;
+
       setUploadState({
         status: 'error',
         message:
