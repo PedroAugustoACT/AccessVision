@@ -1,0 +1,27 @@
+services:
+  - type: web
+    name: accessvision-api
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: LLM_PROVIDER
+        value: gemini
+      - key: LLM_OFFLINE
+        value: false
+      - key: GEMINI_MODEL_ID
+        value: gemini-2.5-flash
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: GEMINI_REQUEST_DELAY_SECONDS
+        value: 12
+      - key: CURSOR_API_KEY
+        sync: false
+      - key: CURSOR_MODEL_ID
+        value: composer-2
+      - key: LLM_TIMEOUT_SECONDS
+        value: 180
+      - key: MAX_UPLOAD_MB
+        value: 50
+      - key: CORS_ORIGINS
+        value: http://localhost:5173,https://access-vision-opal.vercel.app

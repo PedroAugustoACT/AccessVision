@@ -5,10 +5,12 @@ interface UploadFeedbackProps {
   status: 'loading' | 'success' | 'error';
   fileName?: string;
   message?: string;
+  graphCount?: number;
   onDownload?: () => void;
+  onReset?: () => void;
 }
 
-export function UploadFeedback({ status, fileName, message, onDownload }: UploadFeedbackProps) {
+export function UploadFeedback({ status, fileName, message, graphCount, onDownload, onReset }: UploadFeedbackProps) {
   return (
     <div className="flex flex-col items-center justify-center py-8" aria-live="polite" aria-atomic="true">
       {status === 'loading' && (
@@ -51,30 +53,62 @@ export function UploadFeedback({ status, fileName, message, onDownload }: Upload
               Arquivo: <strong>{fileName}</strong>
             </p>
           )}
-          {onDownload && (
-            <button
-              onClick={onDownload}
-              className="mt-6 px-6 py-3 bg-gov-blue text-white font-semibold rounded-lg hover:bg-[#005080] active:bg-[#004a6b] transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-gov-blue focus:ring-offset-2 flex items-center gap-2"
-              aria-label="Baixar arquivo PDF modificado com o nome pdf_modificado.pdf"
-              aria-describedby="success-message processed-file-name"
-            >
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                aria-hidden="true"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
-                />
-              </svg>
-              Baixar PDF Modificado
-            </button>
+          {graphCount !== undefined && (
+            <p className="mt-1 text-sm text-gov-dark-gray font-medium">
+              {graphCount === 0
+                ? 'Nenhum gráfico encontrado no documento'
+                : `${graphCount} gráfico${graphCount > 1 ? 's' : ''} adaptado${graphCount > 1 ? 's' : ''} com descrição acessível`}
+            </p>
           )}
+          <div className="mt-6 flex flex-col sm:flex-row items-center gap-3">
+            {onDownload && (
+              <button
+                onClick={onDownload}
+                className="px-6 py-3 bg-gov-blue text-white font-semibold rounded-lg hover:bg-[#005080] active:bg-[#004a6b] transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-gov-blue focus:ring-offset-2 flex items-center gap-2"
+                aria-label="Baixar PDF adaptado para acessibilidade"
+                aria-describedby="success-message processed-file-name"
+              >
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  aria-hidden="true"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+                  />
+                </svg>
+                Baixar PDF Modificado
+              </button>
+            )}
+            {onReset && (
+              <button
+                onClick={onReset}
+                className="px-4 py-2 text-sm text-gov-dark-gray font-medium rounded-lg hover:bg-gray-100 active:bg-gray-200 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 flex items-center gap-1.5"
+                aria-label="Processar outro arquivo PDF"
+              >
+                <svg
+                  className="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  aria-hidden="true"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1M12 12V4m0 0L8 8m4-4l4 4"
+                  />
+                </svg>
+                Processar outro PDF
+              </button>
+            )}
+          </div>
         </>
       )}
     </div>
